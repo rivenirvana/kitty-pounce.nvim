@@ -1,3 +1,4 @@
+-- TODO: Only load when KITTY_IN_NVIM var is set
 local M = {}
 
 local kitty_mappings = {
@@ -19,6 +20,7 @@ local function navigate(direction)
   if vim.fn.winnr() ~= neighbor and vim.api.nvim_win_get_config(0).relative == '' then
     vim.api.nvim_command('wincmd ' .. direction)
   else
+    -- TODO: Make kitten path configurable
     vim.fn.system('kitty @ kitten scripts/pounce.py ' .. kitty_mappings[direction])
   end
 end
@@ -37,6 +39,7 @@ function M.setup()
     navigate 'l'
   end, {})
 
+  -- TODO: Make keybinds configurable
   vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateLeft<CR>', { silent = true })
   vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateDown<CR>', { silent = true })
   vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateUp<CR>', { silent = true })
