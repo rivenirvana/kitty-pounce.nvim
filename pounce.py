@@ -5,7 +5,7 @@ from kitty.window import Window
 from typing import List
 
 
-def is_editor(window: Window) -> bool:
+def is_nvim(window: Window) -> bool:
     user_vars = window.user_vars
     if user_vars.get("KITTY_IN_NVIM") is not None:
         return True
@@ -45,7 +45,7 @@ def handle_result(
     if window is None:
         return
 
-    if is_editor(window) and len(args) == 3:
+    if is_nvim(window) and len(args) == 3:
         shortcut = args[2]
         for keymap in shortcut.split(">"):
             keyevent = encode_keyevent(window, keymap)
