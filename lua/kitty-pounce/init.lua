@@ -23,24 +23,19 @@ local function navigate(direction)
   end
 end
 
-function M.navigateLeft()
-  navigate 'h'
-end
-function M.navigateDown()
-  navigate 'j'
-end
-function M.navigateUp()
-  navigate 'k'
-end
-function M.navigateRight()
-  navigate 'l'
-end
-
 function M.setup()
-  vim.api.nvim_create_user_command('NavigateLeft', M.navigateLeft, {})
-  vim.api.nvim_create_user_command('NavigateDown', M.navigateDown, {})
-  vim.api.nvim_create_user_command('NavigateUp', M.navigateUp, {})
-  vim.api.nvim_create_user_command('NavigateRight', M.navigateRight, {})
+  vim.api.nvim_create_user_command('NavigateLeft', function()
+    navigate 'h'
+  end, {})
+  vim.api.nvim_create_user_command('NavigateDown', function()
+    navigate 'j'
+  end, {})
+  vim.api.nvim_create_user_command('NavigateUp', function()
+    navigate 'k'
+  end, {})
+  vim.api.nvim_create_user_command('NavigateRight', function()
+    navigate 'l'
+  end, {})
 
   vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateLeft<CR>', { silent = true })
   vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateDown<CR>', { silent = true })
