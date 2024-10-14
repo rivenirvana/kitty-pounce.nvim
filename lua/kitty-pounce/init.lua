@@ -17,7 +17,7 @@ local nvim_bindings = {
 
 local function navigate(direction)
   local neighbor = vim.fn.winnr('1' .. direction)
-  if vim.fn.winnr() ~= neighbor and vim.api.nvim_win_get_config(0).relative == '' then
+  if vim.fn.winnr() ~= neighbor or not vim.api.nvim_win_get_config(0).zindex then
     vim.api.nvim_command('wincmd ' .. direction)
   else
     -- TODO: Make kitten path configurable
