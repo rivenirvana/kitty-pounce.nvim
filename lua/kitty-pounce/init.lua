@@ -27,7 +27,7 @@ local function navigate(direction)
     vim.api.nvim_command('wincmd ' .. direction)
   else
     -- TODO: Make kitten path configurable
-    vim.fn.system('kitty @ kitten scripts/pounce.py ' .. kitty_mappings[direction])
+    vim.fn.system('kitty @ kitten pounce.py ' .. kitty_mappings[direction])
   end
 end
 
