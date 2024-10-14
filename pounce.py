@@ -29,6 +29,12 @@ def encode_keyevent(window: Window, shortcut: str) -> bytes:
     return window.encoded_key(event)
 
 
+def send_keyevent(window: Window, shortcut: str) -> None:
+    for keymap in shortcut.split(">"):
+        keyevent = encode_keyevent(window, keymap)
+        window.write_to_child(keyevent)
+
+
 def main(args: List[str]) -> str:
     pass
 
@@ -38,17 +44,19 @@ def handle_result(
     args: List[str], answer: str, target_window_id: int, boss: Boss
 ) -> None:
     direction = args[1]
+    target = boss.window_id_map.get(target_window_id)
+    if target is None:
+        return
     neighbor_window_id = boss.active_tab.neighboring_group_id(direction)
     neighbor = boss.window_id_map.get(neighbor_window_id)
-    window = boss.window_id_map.get(target_window_id)
-
-    if window is None:
+    if neighbor is None:
         return
 
-    if is_nvim(window) and len(args) == 3:
+    if is_nvim(target) and len(args) == 3:
         shortcut = args[2]
-        for keymap in shortcut.split(">"):
-            keyevent = encode_keyevent(window, keymap)
-            window.write_to_child(keyevent)
+        send_keyevent(target, shortcut)
     else:
         boss.active_tab.neighboring_window(direction)
+        if is_nvim(neighbor):
+            shortcut = args[2]
+            send_keyevent(neighbor, shortcut)
