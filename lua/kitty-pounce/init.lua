@@ -53,10 +53,10 @@ function M.setup()
 
   vim.api.nvim_create_autocmd('FocusGained', {
     callback = function()
-      vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateUpLeft<CR>', {})
-      vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateBottomRight<CR>', {})
-      vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateUpLeft<CR>', {})
-      vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateBottomRight<CR>', {})
+      vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateEdgeBottomRight<CR>', { silent = true })
+      vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateEdgeTopLeft<CR>', { silent = true })
+      vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateEdgeBottomRight<CR>', { silent = true })
+      vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateEdgeTopLeft<CR>', { silent = true })
 
       vim.defer_fn(function()
         vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateLeft<CR>', { silent = true })
