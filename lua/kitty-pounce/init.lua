@@ -32,22 +32,22 @@ local function navigate(direction)
 end
 
 function M.setup()
-  vim.api.nvim_create_user_command('NavigateLeft', function()
+  vim.api.nvim_create_user_command('NavigateWindowLeft', function()
     navigate 'h'
   end, {})
-  vim.api.nvim_create_user_command('NavigateDown', function()
+  vim.api.nvim_create_user_command('NavigateWindowDown', function()
     navigate 'j'
   end, {})
-  vim.api.nvim_create_user_command('NavigateUp', function()
+  vim.api.nvim_create_user_command('NavigateWindowUp', function()
     navigate 'k'
   end, {})
-  vim.api.nvim_create_user_command('NavigateRight', function()
+  vim.api.nvim_create_user_command('NavigateWindowRight', function()
     navigate 'l'
   end, {})
-  vim.api.nvim_create_user_command('NavigateUpLeft', function()
+  vim.api.nvim_create_user_command('NavigateEdgeTopLeft', function()
     navigate 't'
   end, {})
-  vim.api.nvim_create_user_command('NavigateBottomRight', function()
+  vim.api.nvim_create_user_command('NavigateEdgeBottomRight', function()
     navigate 'b'
   end, {})
 
@@ -59,19 +59,19 @@ function M.setup()
       vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateEdgeTopLeft<CR>', { silent = true })
 
       vim.defer_fn(function()
-        vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateLeft<CR>', { silent = true })
-        vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateDown<CR>', { silent = true })
-        vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateUp<CR>', { silent = true })
-        vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateRight<CR>', { silent = true })
+        vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateWindowLeft<CR>', { silent = true })
+        vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateWindowDown<CR>', { silent = true })
+        vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateWindowUp<CR>', { silent = true })
+        vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateWindowRight<CR>', { silent = true })
       end, 5)
     end,
   })
 
   -- TODO: Make keybinds configurable
-  vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateLeft<CR>', { silent = true })
-  vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateDown<CR>', { silent = true })
-  vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateUp<CR>', { silent = true })
-  vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateRight<CR>', { silent = true })
+  vim.api.nvim_set_keymap('n', nvim_bindings.Left, ':NavigateWindowLeft<CR>', { silent = true })
+  vim.api.nvim_set_keymap('n', nvim_bindings.Down, ':NavigateWindowDown<CR>', { silent = true })
+  vim.api.nvim_set_keymap('n', nvim_bindings.Up, ':NavigateWindowUp<CR>', { silent = true })
+  vim.api.nvim_set_keymap('n', nvim_bindings.Right, ':NavigateWindowRight<CR>', { silent = true })
 end
 
 return M
