@@ -43,20 +43,21 @@ def main(args: List[str]) -> str:
 def handle_result(
     args: List[str], answer: str, target_window_id: int, boss: Boss
 ) -> None:
-    direction = args[1]
     target = boss.window_id_map.get(target_window_id)
     if target is None:
         return
-    neighbor_window_id = boss.active_tab.neighboring_group_id(direction)
-    neighbor = boss.window_id_map.get(neighbor_window_id)
-    if neighbor is None:
-        return
 
     if is_nvim(target) and len(args) == 3:
-        shortcut = args[2]
+        shortcut = args[1]
         send_keyevent(target, shortcut)
     else:
-        boss.active_tab.neighboring_window(direction)
+        direction = args[2]
+        neighbor_window_id = boss.active_tab.neighboring_group_id(direction)
+        neighbor = boss.window_id_map.get(neighbor_window_id)
+        if neighbor is None:
+            return
+
+        boss.active_tab.windows.set_active_group(neighbor_window_id)
         if is_nvim(neighbor):
-            shortcut = args[2]
+            shortcut = args[1]
             send_keyevent(neighbor, shortcut)
