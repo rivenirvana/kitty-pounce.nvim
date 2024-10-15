@@ -1,4 +1,5 @@
 -- TODO: Only load when KITTY_IN_NVIM var is set
+-- TODO: Wraparound window focus
 local M = {}
 
 local mappings = {
@@ -24,6 +25,7 @@ local function navigate_window(mapping)
   end
 end
 
+-- TODO: Make edge navigation on focus optional
 local function navigate_edge(mapping)
   local target = vim.fn.winnr()
   local last = vim.fn.winnr '$'
@@ -65,6 +67,7 @@ function M.setup()
       vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[3].direction .. '>', ':NavigateEdge' .. mappings[6].name .. '<CR>', { silent = true })
       vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[4].direction .. '>', ':NavigateEdge' .. mappings[5].name .. '<CR>', { silent = true })
 
+      -- TODO: Maybe use nvim's key timeout values
       vim.defer_fn(set_keymaps, 5)
     end,
   })
