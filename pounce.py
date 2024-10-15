@@ -53,11 +53,11 @@ def handle_result(
     else:
         direction = args[2]
         neighbor_window_id = boss.active_tab.neighboring_group_id(direction)
-        neighbor = boss.window_id_map.get(neighbor_window_id)
-        if neighbor is None:
+        if neighbor_window_id is None:
             return
 
         boss.active_tab.windows.set_active_group(neighbor_window_id)
+        neighbor = boss.window_id_map.get(neighbor_window_id)
         if is_nvim(neighbor):
             shortcut = args[1]
             send_keyevent(neighbor, shortcut)
