@@ -2,14 +2,14 @@
 -- TODO: Wraparound window focus
 local M = {}
 
+local commandPrefix = 'Pounce'
+local mod = { name = 'alt', key = 'M' }
 local cardinals = {
   { name = 'Left', kittyLiteral = 'left', direction = 'h', cornerName = 'BottomRight', cornerDirection = 'b' },
   { name = 'Down', kittyLiteral = 'bottom', direction = 'j', cornerName = 'TopLeft', cornerDirection = 't' },
   { name = 'Up', kittyLiteral = 'top', direction = 'k', cornerName = 'BottomRight', cornerDirection = 'b' },
   { name = 'Right', kittyLiteral = 'right', direction = 'l', cornerName = 'TopLeft', cornerDirection = 't' },
 }
-
-local mod = { name = 'alt', key = 'M' }
 
 local function navigate_window(direction, literal)
   local target = vim.fn.winnr()
@@ -34,7 +34,7 @@ local function navigate_edge(direction)
 end
 
 local function create_plugin_keymap(key, direction, target, name)
-  vim.api.nvim_set_keymap('n', '<' .. key .. '-' .. direction .. '>', ':Navigate' .. target .. name .. '<CR>', { silent = true })
+  vim.api.nvim_set_keymap('n', '<' .. key .. '-' .. direction .. '>', ':' .. commandPrefix .. target .. name .. '<CR>', { silent = true })
 end
 
 local function set_true_keymaps(mappings)
@@ -51,11 +51,11 @@ end
 
 function M.setup()
   for index, mapping in ipairs(cardinals) do
-    vim.api.nvim_create_user_command('NavigateWindow' .. mapping.name, function()
+    vim.api.nvim_create_user_command(commandPrefix .. 'Window' .. mapping.name, function()
       navigate_window(mapping.direction, mapping.kittyLiteral)
     end, {})
     if index > 2 then
-      vim.api.nvim_create_user_command('NavigateEdge' .. mapping.cornerName, function()
+      vim.api.nvim_create_user_command(commandPrefix .. 'Edge' .. mapping.cornerName, function()
         navigate_edge(mapping.cornerDirection)
       end, {})
     end
