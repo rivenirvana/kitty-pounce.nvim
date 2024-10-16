@@ -46,7 +46,6 @@ def handle_result(
     target = boss.window_id_map.get(target_window_id)
     if target is None:
         return
-
     if is_nvim(target) and len(args) == 3:
         shortcut = args[1]
         send_keyevent(target, shortcut)
@@ -55,9 +54,8 @@ def handle_result(
         neighbor_window_id = boss.active_tab.neighboring_group_id(direction)
         if neighbor_window_id is None:
             return
-
         boss.active_tab.windows.set_active_group(neighbor_window_id)
-        neighbor = boss.window_id_map.get(neighbor_window_id)
-        if is_nvim(neighbor):
+        current = boss.active_window
+        if is_nvim(current):
             shortcut = args[1]
-            send_keyevent(neighbor, shortcut)
+            send_keyevent(current, shortcut)

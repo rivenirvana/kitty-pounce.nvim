@@ -62,13 +62,17 @@ function M.setup()
 
   vim.api.nvim_create_autocmd('FocusGained', {
     callback = function()
+      -- TODO: Maybe use nvim's key timeout values
+      vim.defer_fn(set_keymaps, 10)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd('FocusLost', {
+    callback = function()
       vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[1].direction .. '>', ':NavigateEdge' .. mappings[6].name .. '<CR>', { silent = true })
       vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[2].direction .. '>', ':NavigateEdge' .. mappings[5].name .. '<CR>', { silent = true })
       vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[3].direction .. '>', ':NavigateEdge' .. mappings[6].name .. '<CR>', { silent = true })
       vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[4].direction .. '>', ':NavigateEdge' .. mappings[5].name .. '<CR>', { silent = true })
-
-      -- TODO: Maybe use nvim's key timeout values
-      vim.defer_fn(set_keymaps, 5)
     end,
   })
 end
