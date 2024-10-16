@@ -2,77 +2,80 @@
 -- TODO: Wraparound window focus
 local M = {}
 
-local mappings = {
-  { target = 'Window', name = 'Left', kittyLiteral = 'left', direction = 'h' },
-  { target = 'Window', name = 'Down', kittyLiteral = 'bottom', direction = 'j' },
-  { target = 'Window', name = 'Up', kittyLiteral = 'top', direction = 'k' },
-  { target = 'Window', name = 'Right', kittyLiteral = 'right', direction = 'l' },
-  { target = 'Edge', name = 'TopLeft', direction = 't' },
-  { target = 'Edge', name = 'BottomRight', direction = 'b' },
+local cardinals = {
+  { name = 'Left', kittyLiteral = 'left', direction = 'h', cornerName = 'BottomRight', cornerDirection = 'b' },
+  { name = 'Down', kittyLiteral = 'bottom', direction = 'j', cornerName = 'TopLeft', cornerDirection = 't' },
+  { name = 'Up', kittyLiteral = 'top', direction = 'k', cornerName = 'BottomRight', cornerDirection = 'b' },
+  { name = 'Right', kittyLiteral = 'right', direction = 'l', cornerName = 'TopLeft', cornerDirection = 't' },
 }
 
 local mod = { name = 'alt', key = 'M' }
 
-local function navigate_window(mapping)
+local function navigate_window(direction, literal)
   local target = vim.fn.winnr()
-  local neighbor = vim.fn.winnr('1' .. mapping.direction)
+  local neighbor = vim.fn.winnr('1' .. direction)
 
   if vim.api.nvim_win_get_config(0).relative == '' and target ~= neighbor then
-    vim.api.nvim_command('wincmd ' .. mapping.direction)
+    vim.api.nvim_command('wincmd ' .. direction)
   else
     -- TODO: Make kitten path configurable
-    vim.fn.system('kitty @ kitten pounce.py ' .. mod.name .. '+' .. mapping.direction .. ' ' .. mapping.kittyLiteral .. ' defer')
+    vim.fn.system('kitty @ kitten pounce.py ' .. mod.name .. '+' .. direction .. ' ' .. literal .. ' defer')
   end
 end
 
 -- TODO: Make edge navigation on focus optional
-local function navigate_edge(mapping)
+local function navigate_edge(direction)
   local target = vim.fn.winnr()
   local last = vim.fn.winnr '$'
 
-  if vim.api.nvim_win_get_config(0).relative == '' and ((mapping.direction == 't' and target ~= 1) or (mapping.direction == 'b' and target ~= last)) then
-    vim.api.nvim_command('wincmd ' .. mapping.direction)
+  if vim.api.nvim_win_get_config(0).relative == '' and ((direction == 't' and target ~= 1) or (direction == 'b' and target ~= last)) then
+    vim.api.nvim_command('wincmd ' .. direction)
   end
 end
 
-local function set_keymaps()
-  for index, mapping in ipairs(mappings) do
-    vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mapping.direction .. '>', ':NavigateWindow' .. mapping.name .. '<CR>', { silent = true })
-    if index == 4 then
-      break
-    end
+local function create_plugin_keymap(key, direction, target, name)
+  vim.api.nvim_set_keymap('n', '<' .. key .. '-' .. direction .. '>', ':Navigate' .. target .. name .. '<CR>', { silent = true })
+end
+
+local function set_true_keymaps(mappings)
+  for _, mapping in ipairs(mappings) do
+    create_plugin_keymap(mod.key, mapping.direction, 'Window', mapping.name)
+  end
+end
+
+local function set_temp_keymaps(mappings)
+  for _, mapping in ipairs(mappings) do
+    create_plugin_keymap(mod.key, mapping.direction, 'Edge', mapping.cornerName)
   end
 end
 
 function M.setup()
-  for _, mapping in ipairs(mappings) do
-    if mapping.target == 'Window' then
-      vim.api.nvim_create_user_command('NavigateWindow' .. mapping.name, function()
-        navigate_window(mapping)
-      end, {})
-    else
-      vim.api.nvim_create_user_command('NavigateEdge' .. mapping.name, function()
-        navigate_edge(mapping)
+  for index, mapping in ipairs(cardinals) do
+    vim.api.nvim_create_user_command('NavigateWindow' .. mapping.name, function()
+      navigate_window(mapping.direction, mapping.kittyLiteral)
+    end, {})
+    if index > 2 then
+      vim.api.nvim_create_user_command('NavigateEdge' .. mapping.cornerName, function()
+        navigate_edge(mapping.cornerDirection)
       end, {})
     end
   end
 
   -- TODO: Make keybinds configurable
-  set_keymaps()
+  set_true_keymaps(cardinals)
 
   vim.api.nvim_create_autocmd('FocusGained', {
     callback = function()
       -- TODO: Maybe use nvim's key timeout values
-      vim.defer_fn(set_keymaps, 10)
+      vim.defer_fn(function()
+        set_true_keymaps(cardinals)
+      end, 10)
     end,
   })
 
   vim.api.nvim_create_autocmd('FocusLost', {
     callback = function()
-      vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[1].direction .. '>', ':NavigateEdge' .. mappings[6].name .. '<CR>', { silent = true })
-      vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[2].direction .. '>', ':NavigateEdge' .. mappings[5].name .. '<CR>', { silent = true })
-      vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[3].direction .. '>', ':NavigateEdge' .. mappings[6].name .. '<CR>', { silent = true })
-      vim.api.nvim_set_keymap('n', '<' .. mod.key .. '-' .. mappings[4].direction .. '>', ':NavigateEdge' .. mappings[5].name .. '<CR>', { silent = true })
+      set_temp_keymaps(cardinals)
     end,
   })
 end
