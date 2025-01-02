@@ -15,7 +15,7 @@ local function navigate_window(direction, literal)
   local target = vim.fn.winnr()
   local neighbor = vim.fn.winnr('1' .. direction)
 
-  if vim.api.nvim_win_get_config(0).relative == '' and target ~= neighbor then
+  if vim.api.nvim_win_get_config(0).relative == '' and vim.api.nvim_get_mode().mode ~= 'c' and target ~= neighbor then
     vim.api.nvim_command('wincmd ' .. direction)
   else
     -- TODO: Make kitten path configurable
@@ -28,13 +28,20 @@ local function navigate_edge(direction)
   local target = vim.fn.winnr()
   local last = vim.fn.winnr '$'
 
-  if vim.api.nvim_win_get_config(0).relative == '' and ((direction == 't' and target ~= 1) or (direction == 'b' and target ~= last)) then
+  if
+    vim.api.nvim_win_get_config(0).relative == ''
+    and vim.api.nvim_get_mode().mode ~= 'c'
+    and ((direction == 't' and target ~= 1) or (direction == 'b' and target ~= last))
+  then
     vim.api.nvim_command('wincmd ' .. direction)
   end
 end
 
 local function create_plugin_keymap(key, direction, target, name)
-  vim.api.nvim_set_keymap('n', '<' .. key .. '-' .. direction .. '>', ':' .. commandPrefix .. target .. name .. '<CR>', { silent = true })
+  local modes = { 'n', 'c', 'i' }
+  for _, mode in ipairs(modes) do
+    vim.api.nvim_set_keymap(mode, '<' .. key .. '-' .. direction .. '>', '<Cmd>' .. commandPrefix .. target .. name .. '<CR>', { silent = true })
+  end
 end
 
 local function set_true_keymaps(mappings)
